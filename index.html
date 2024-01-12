@@ -14,13 +14,17 @@
   <fieldset>
     <legend>Tile</legend>
     <form id="tile">
-      <label>
-        <span>W</span>
+      <label data-unit='"'>
+        <span>W:</span>
         <input name="w" type="number" value="24" />
       </label>
-      <label>
-        <span>H</span>
+      <label data-unit='"'>
+        <span>H:</span>
         <input name="h" type="number" value="12" />
+      </label>
+      <label>
+        <span>Gap:</span>
+        <input name="gap" type="number" value="4" min="1" max="10" />
       </label>
     </form>
   </fieldset>
@@ -29,12 +33,16 @@
     <section class="wall">
       <form>
         <label>
-          <span>W</span>
+          <span>W:</span>
           <input name="w" type="number" value="39" />
         </label>
         <label>
-          <span>H</span>
-          <input name="h" type="number" value="" />
+          <span>H:</span>
+          <input name="h" type="number" value="92" />
+        </label>
+        <label>
+          <span>X:</span>
+          <input name="x" type="number" value="2" min="1" max="4" />
         </label>
       </form>
       <div class="wall"></div>
@@ -48,6 +56,10 @@
         <label>
           <span>H</span>
           <input name="h" type="number" value="92" />
+        </label>
+        <label>
+          <span>X:</span>
+          <input name="x" type="number" value="2" min="1" max="4" />
         </label>
       </form>
       <div class="wall"></div>

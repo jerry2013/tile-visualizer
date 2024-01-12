@@ -42,34 +42,45 @@ section.wall {
   gap: 10px;
 }
 
-div {
+div.wall,
+div.row {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap-reverse;
+  flex-wrap: nowrap;
   gap: var(--gap);
 }
 
 div.wall {
+  flex-direction: column-reverse;
   width: var(--width);
   height: var(--height);
+  overflow: hidden;
   outline: dotted 2px darkgray;
   margin-right: 1em;
   padding: calc(var(--gap) / 2);
   counter-reset: num-tiles;
 }
 
+div.row {
+  flex-direction: row;
+  --partialX: 0px;
+  --partialY: 0px;
+}
+
 .tile {
+  flex: 0 0 auto;
   position: relative;
-  width: calc(var(--tileW) - var(--gap));
-  height: calc(var(--tileH) - var(--gap));
+  width: calc(var(--tileW) - var(--gap) + var(--partialX));
+  height: calc(var(--tileH) - var(--gap) + var(--partialY));
   outline: solid 1px #ccc;
+  color: #666;
   background-color: #eee;
   box-shadow: 0 0 2px gray;
   display: flex;
-  align-content: center;
   justify-content: center;
-  counter-increment: num-tiles;
+  align-items: center;
+  /* corner counter */
   overflow: hidden;
+  counter-increment: num-tiles;
 }
 
 .tile::before,
@@ -79,13 +90,19 @@ div.wall {
   left: 0;
   display: block;
   font-size: 0.75em;
+  opacity: 0;
+}
+
+.tile:hover::before,
+.tile:hover::after {
+  opacity: 0.75;
 }
 
 .tile::before {
   content: '';
   width: 3em;
   height: 3em;
-  background-color: #0079C666;
+  background-color: #0079C611;
   transform-origin: 50% 50%;
   transform: rotate(45deg) translate(-2em);
 }
@@ -95,4 +112,5 @@ div.wall {
   width: 1.25em;
   height: 1.25em;
   text-align: center;
+  opacity: 0;
 }

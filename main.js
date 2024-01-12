@@ -5,27 +5,26 @@ window.onload = () => {
     document.querySelectorAll('div.wall').forEach((wall) => {
       wall.textContent = '';
 
-      const gap = parseInt(window.getComputedStyle(document.body).getPropertyValue('--gap'));
+      const vars = window.getComputedStyle(wall);
+      const gap = parseInt(vars.getPropertyValue('--gap'));
+      const rowShift = parseInt(vars.getPropertyValue('--rowShift')) || 3;
       const { clientWidth: wallW, clientHeight: wallH } = wall;
 
       if (wallH <= gap) {
         return;
       }
 
-      const makeTile = (width = 0, height = 0) => {
+      const makeTile = ({ tileRow, width = 0, height = 0 } = {}) => {
         const sizes = [width, height].map((n) => `${Number((n / 10).toPrecision(2))}"`);
 
-        const tile = wall.appendChild(
+        const tile = tileRow.appendChild(
           Object.assign(document.createElement('div'), {
             className: 'tile',
             title: sizes.join('x'),
-          })
-        )
-        if (width && width < tileW) {
-          tile.style.width = (width - gap) + 'px';
-        }
+          }),
+        );
+
         if (height && height < tileH) {
-          tile.style.height = (height - gap) + 'px';
           tile.textContent = sizes.join('x');
         } else {
           tile.textContent = sizes[0];
@@ -34,10 +33,11 @@ window.onload = () => {
         return tile;
       };
 
-      const fullTiles = Math.floor(wallW / tileW);
-      const rowStart = (r) => {
-        const partial = (wallW - fullTiles * tileW - tileW * (r % 3)) / 2;
-        return (partial < 0) ? tileW + partial : partial;
+      const partialStart = (wallW - Math.floor(wallW / tileW) * tileW) / 2;
+      const rowStart = (rowIdx) => {
+        const partial = (partialStart + tileW * (rowIdx % rowShift) / rowShift);
+        console.debug({ partial });
+        return (partial > 0) ? partial - tileW : partial;
       };
 
       const rows = Math.ceil(wallH / tileH);
@@ -45,24 +45,26 @@ window.onload = () => {
       // row
       for (let rowIdx = 0, rowH = tileH; rowIdx < rows; rowIdx++, rowH += tileH) {
         console.debug('row=', rowIdx + 1);
-        const h = (rowH > wallH) ? (wallH - (rowH - tileH)) : tileH;
+        const tileRow = wall.appendChild(
+          Object.assign(document.createElement('div'), {
+            className: 'row',
+          }),
+        );
 
         // tiles
-        for (let w = rowStart(rowIdx), rowW = w; ; rowW += tileW, w = tileW) {
-          console.debug('tile=', {w});
-          if (rowW >= wallW) {
-            w = wallW - (rowW - w);
-            if (w < 0) {
-              break;
-            }
-
-            makeTile(w, h);
-            break;
+        const startX = rowStart(rowIdx);
+        for (let rowW = 0; startX + rowW < wallW; rowW += tileW) {
+          console.debug('tile=', { startX, rowW });
+          const tile = makeTile({ tileRow });
+          if (rowW === 0 && startX) {
+            tile.style.setProperty('--partialX', startX + 'px');
           }
-
-          makeTile(w, h);
         }
+
+        tileRow.lastElementChild.style.setProperty('--partialX', (tileRow.clientWidth - tileRow.scrollWidth) + 'px');
       }
+
+      wall.lastElementChild.style.setProperty('--partialY', (wall.clientHeight - wall.scrollHeight) + 'px');
     });
   };
 
@@ -77,7 +79,9 @@ window.onload = () => {
       if (wall) {
         wall.style.setProperty('--width', `${w}px`);
         wall.style.setProperty('--height', `${h}px`);
+        wall.style.setProperty('--rowShift', formData.get('x'));
       } else {
+        document.body.style.setProperty('--gap', `${Number(formData.get('gap'))}px`);
         document.body.style.setProperty('--tileW', `${w}px`);
         document.body.style.setProperty('--tileH', `${h}px`);
         tileW = w;
@@ -88,11 +92,13 @@ window.onload = () => {
     form.onsubmit = (e) => e.preventDefault();
 
     form.querySelectorAll('input').forEach((input) => {
-      input.onchange = () => setSize();
+      input.onchange = () => {
+        setSize();
+        draw();
+      };
     });
     setSize();
   });
 
   draw();
 };
-

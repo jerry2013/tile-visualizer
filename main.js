@@ -1,6 +1,15 @@
 window.onload = () => {
   let tileW, tileH;
 
+  /**
+   * @param {Element} parent
+   * @param {string} tagName
+   * @param {string=} className
+   */
+  const appendChild = (parent, tagName, className) => parent.appendChild(
+    Object.assign(document.createElement(tagName), { className }),
+  );
+
   const wallDefs = [
     { w: 39, h: 92, x: 2 },
     { w: 54, h: 92, x: 2 },
@@ -11,9 +20,7 @@ window.onload = () => {
   wallDefs.forEach((def) => {
     /** @type {HTMLElement} */
     const clone = template.content.cloneNode(true);
-    Object.entries(def).forEach(([key, val]) => {
-      clone.querySelector(`input[name=${key}]`).value = val;
-    });
+    Object.entries(def).forEach(([key, val]) => (clone.querySelector(`input[name=${key}]`).value = val));
     container.appendChild(clone);
   });
 
@@ -32,25 +39,6 @@ window.onload = () => {
         return;
       }
 
-      const makeTile = ({ tileRow, width = 0, height = 0 } = {}) => {
-        const sizes = [width, height].map((n) => `${Number((n / 10).toPrecision(2))}"`);
-
-        const tile = tileRow.appendChild(
-          Object.assign(document.createElement('div'), {
-            className: 'tile',
-            title: sizes.join('x'),
-          }),
-        );
-
-        if (height && height < tileH) {
-          tile.textContent = sizes.join('x');
-        } else {
-          tile.textContent = sizes[0];
-        }
-
-        return tile;
-      };
-
       const partialStart = rowDelta + (wallW - Math.floor(wallW / tileW) * tileW) / 2;
       const rowStart = (rowIdx) => {
         const partial = (partialStart + tileW * (rowIdx % rowShift) / rowShift);
@@ -61,16 +49,13 @@ window.onload = () => {
 
       // row
       for (let rowIdx = 0, rowH = tileH; rowIdx < rows; rowIdx++, rowH += tileH) {
-        const tileRow = wall.appendChild(
-          Object.assign(document.createElement('div'), {
-            className: 'row',
-          }),
-        );
+        const tileRow = appendChild(wall, 'div', 'row');
 
         // tiles
         const startX = rowStart(rowIdx);
         for (let rowW = 0; startX + rowW < wallW; rowW += tileW) {
-          const tile = makeTile({ tileRow });
+          const tile = appendChild(tileRow, 'div', 'tile');
+
           if (rowW === 0 && startX) {
             tile.style.setProperty('--partialX', startX + 'px');
           }
@@ -80,6 +65,16 @@ window.onload = () => {
       }
 
       wall.lastElementChild.style.setProperty('--partialY', (wall.clientHeight - wall.scrollHeight) + 'px');
+
+      // get size from DOM
+      document.querySelectorAll('div.tile').forEach((/** @type {HTMLElement} */tile) => {
+        const width = (tile.clientWidth + gap);
+        const height = (tile.clientHeight + gap);
+
+        const sizes = [width, height].map((n) => `${Number((n / 10).toPrecision(2))}"`);
+        tile.title = sizes.join('x');
+        tile.textContent = height < tileH ? sizes.join('x') : sizes[0];
+      });
     });
   };
 

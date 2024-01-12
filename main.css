@@ -1,0 +1,98 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  --gap: 4px;
+}
+
+fieldset {
+  display: flex;
+  gap: 1em;
+  border: 1px solid lightgray;
+}
+
+form {
+  display: flex;
+  gap: 1em;
+}
+
+label {
+  position: relative;
+  padding-right: 0.5em;
+
+  &::after {
+    content: '"';
+    position: absolute;
+    right: 0;
+  }
+}
+
+input {
+  width: 3.5em;
+  border: 1px solid lightgray;
+  border-width: 0 0 1px 0;
+  padding: .2em;
+}
+
+section.wall {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap-reverse;
+  gap: var(--gap);
+}
+
+div.wall {
+  width: var(--width);
+  height: var(--height);
+  outline: dotted 2px darkgray;
+  margin-right: 1em;
+  padding: calc(var(--gap) / 2);
+  counter-reset: num-tiles;
+}
+
+.tile {
+  position: relative;
+  width: calc(var(--tileW) - var(--gap));
+  height: calc(var(--tileH) - var(--gap));
+  outline: solid 1px #ccc;
+  background-color: #eee;
+  box-shadow: 0 0 2px gray;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  counter-increment: num-tiles;
+  overflow: hidden;
+}
+
+.tile::before,
+.tile::after {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  font-size: 0.75em;
+}
+
+.tile::before {
+  content: '';
+  width: 3em;
+  height: 3em;
+  background-color: #0079C666;
+  transform-origin: 50% 50%;
+  transform: rotate(45deg) translate(-2em);
+}
+
+.tile::after {
+  content: counter(num-tiles);
+  width: 1.25em;
+  height: 1.25em;
+  text-align: center;
+}

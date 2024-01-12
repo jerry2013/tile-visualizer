@@ -23,14 +23,14 @@ label {
   padding-right: 0.5em;
 
   &::after {
-    content: '"';
+    content: attr(data-unit);
     position: absolute;
     right: 0;
   }
 }
 
 input {
-  width: 3.5em;
+  width: 3.25em;
   border: 1px solid lightgray;
   border-width: 0 0 1px 0;
   padding: .2em;

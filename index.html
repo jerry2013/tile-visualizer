@@ -24,7 +24,11 @@
       </label>
       <label data-unit='"'>
         <span>Gap:</span>
-        <input name="gap" type="number" value="0.4" min="0.1" max="1" step="0.1" />
+        <select name="gap">
+          <option value="0.125">&#8539;</option>
+          <option value="0.25">&#188;</option>
+          <option value="0.375">&#8540;</option>
+        </select>
       </label>
       <label>
         <span>Color:</span>
@@ -35,6 +39,7 @@
           <option value="#a9a9a9">dark gray</option>
           <option value="#808080">gray</option>
           <option value="#696969">dim gray</option>
+          <option value="#333333">pebble</option>
           <option value="#000000">black</option>
         </select>
       </label>
@@ -46,25 +51,30 @@
   <template id="t_wall">
     <section class="wall">
       <form>
-        <label data-unit='"'>
-          <span>W</span>
-          <input name="w" type="number" value="54" />
-        </label>
-        <label data-unit='"'>
-          <span>H</span>
-          <input name="h" type="number" value="92" />
-        </label>
-        <label data-unit='"'>
-          <span>Δ:</span>
-          <input name="d" type="number" value="0" step="0.5" />
-        </label>
-        <label>
-          <span>X:</span>
-          <input name="x" type="number" value="2" min="1" max="4" />
-        </label>
+        <section>
+          <label data-unit='"'>
+            <span>W:</span>
+            <input name="w" type="number" value="54" />
+          </label>
+          <label data-unit='"'>
+            <span>H:</span>
+            <input name="h" type="number" value="92" />
+          </label>
+          <label>
+            <span>Offset:</span>
+            <input name="o" type="number" value="2" min="1" max="4" />
+          </label>
+        </section>
+        <section class="deltas"></section>
       </form>
       <div class="wall"></div>
     </section>
+  </template>
+  <template id="t_delta">
+    <label data-unit='"'>
+      <span>Δ:</span>
+      <input name="d" type="number" value="0" step="0.5" />
+    </label>
   </template>
 
   <script src='src/main.mjs' type="module"></script>

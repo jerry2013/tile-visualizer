@@ -7,7 +7,7 @@
 import { updateLabel } from './draw.mjs';
 
 /**
- * @typedef {Size & {offset: number, delta: number}} WallDef
+ * @typedef {Size & {offset: number, delta: number[]}} WallDef
  */
 
 /**
@@ -28,13 +28,12 @@ export const appendChild = (parent, { tagName = 'div', className }) =>
   parent.appendChild(Object.assign(document.createElement(tagName), { className }));
 
 /**
- * @param {Node} node
+ * @param {Element} node
  * @param {string} name
- * @returns {HTMLInputElement}
+ * @returns {NodeListOf<HTMLInputElement>}
  */
-export const findInput = (node, name) =>
-  // @ts-ignore
-  node.querySelector(`input[name=${name}]`);
+export const findInputs = (node, name) =>
+  node.querySelectorAll(`input[name=${name}]`);
 
 /**
  * @param {HTMLFormElement} form
@@ -50,8 +49,9 @@ export const setSize = (form) => {
   if (wall) {
     wall.style.setProperty('--width', `${w}px`);
     wall.style.setProperty('--height', `${h}px`);
-    wall.style.setProperty('--rowDelta', `${Number(formData.get('d')) * 10}px`);
-    wall.style.setProperty('--rowShift', String(formData.get('x')));
+    wall.style.setProperty('--rowShift', String(formData.get('o')));
+
+    wall.dataset['deltas'] = formData.getAll('d').join(',');
   } else {
     document.body.style.setProperty('--gap', `${Number(formData.get('gap')) * 10}px`);
     document.body.style.setProperty('--tileW', `${w}px`);
@@ -75,25 +75,48 @@ export const loadWalls = () => {
   }
 
   wallDefs ||= [
-    { width: 39, height: 92, offset: 2, delta: 0 },
-    { width: 54, height: 92, offset: 2, delta: 0 },
-    { width: 39, height: 92, offset: 2, delta: 0 },
+    { width: 39, height: 92, offset: 2, delta: [0] },
+    { width: 54, height: 92, offset: 2, delta: [0] },
+    { width: 39, height: 92, offset: 2, delta: [0] },
   ];
 
   /** @type {HTMLTemplateElement} */
-  const template = document.querySelector('#t_wall');
+  const t_wall = document.querySelector('#t_wall');
+  /** @type {HTMLTemplateElement} */
+  const t_delta = document.querySelector('#t_delta');
 
   document.querySelector('#walls').append(
     ...wallDefs.map((def) => {
-      const clone = template.content.cloneNode(true);
+      /** @type {Element} */
+      const clone = t_wall.content.cloneNode(true);
+
+      clone.querySelector('.deltas').replaceChildren(
+        ...new Array(4).fill(0).map(() => t_delta.content.cloneNode(true)));
+
+      syncDeltas(clone, def.offset);
+
       Object.entries(def).forEach(([key, val]) => {
-        const input = findInput(clone, key.charAt(0));
-        if (input) {
-          input.value = String(val);
+        const inputs = findInputs(clone, key.charAt(0));
+        if (inputs.length) {
+          if (Array.isArray(val)) {
+            inputs.forEach((node, i) => (node.value = String(val[i])));
+          } else {
+            inputs[0].value = String(val);
+          }
         }
       });
       return clone;
     }));
+};
+
+/**
+ * @param {Element} wall
+ * @param {number} offset
+ */
+export const syncDeltas = (wall, offset) => {
+  wall.querySelectorAll('.deltas label').forEach((delta, idx) => {
+    delta.classList.toggle('hidden', idx >= offset);
+  });
 };
 
 export const saveWalls = () => {
@@ -103,10 +126,10 @@ export const saveWalls = () => {
   document.querySelectorAll('#walls > .wall')
     .forEach((node) => {
       wallDefs.push({
-        width: findInput(node, 'w').valueAsNumber,
-        height: findInput(node, 'h').valueAsNumber,
-        offset: findInput(node, 'x').valueAsNumber,
-        delta: findInput(node, 'd').valueAsNumber,
+        width: findInputs(node, 'w')[0].valueAsNumber,
+        height: findInputs(node, 'h')[0].valueAsNumber,
+        offset: findInputs(node, 'o')[0].valueAsNumber,
+        delta: [...findInputs(node, 'd')].map((n) => n.valueAsNumber),
       });
     });
 

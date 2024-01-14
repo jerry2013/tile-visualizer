@@ -2,6 +2,10 @@
   box-sizing: border-box;
 }
 
+.hidden {
+  display: none;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --gap: 0px;
@@ -17,6 +21,13 @@ fieldset {
 
 form {
   display: flex;
+  flex-wrap: wrap;
+}
+
+form#tile,
+form section {
+  flex-basis: 100%;
+  display: flex;
   gap: 1em;
 }
 
@@ -31,11 +42,20 @@ label::after {
   right: 0;
 }
 
-input {
-  width: 3.25em;
+input,
+select {
   border: 1px solid lightgray;
   border-width: 0 0 1px 0;
+}
+
+input {
+  width: 3.25em;
   padding: .2em .1em;
+}
+
+select {
+  width: unset;
+  font-size: 1.25em;
 }
 
 section.wall {
@@ -56,7 +76,7 @@ div.wall {
   width: var(--width);
   height: var(--height);
   overflow: hidden;
-  outline: dotted 2px darkgray;
+  outline: dotted 2px lightgray;
   margin-right: 1em;
   padding: calc(var(--gap) / 2);
   counter-reset: num-tiles;
@@ -84,10 +104,10 @@ div.row.dragging {
   height: calc(var(--tileH) - var(--gap));
   margin-left: calc(var(--partialX) + var(--shift));
   margin-top: calc(var(--partialY));
-  outline: solid 1px #ccc;
-  color:darkgray;
+  transition: color ease-in 0.25s;
+  color: transparent;
   background-color: #eee;
-  box-shadow: 0 0 0 var(--gap) var(--gap-color);
+  box-shadow: 0 0 1px var(--gap) var(--gap-color);
   display: flex;
   justify-content: center;
   align-items: end;
@@ -96,6 +116,7 @@ div.row.dragging {
   counter-increment: num-tiles;
 }
 
+section.wall:has(form:hover) .tile,
 div.row.dragging .tile,
 .tile:hover {
   color: #666;

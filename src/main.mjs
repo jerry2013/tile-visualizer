@@ -1,5 +1,5 @@
 import { draw } from './draw.mjs';
-import { loadWalls, saveWalls, setSize, startDragging } from './util.mjs';
+import { loadWalls, saveWalls, setSize, startDragging, syncDeltas } from './util.mjs';
 
 window.onload = () => {
   loadWalls();
@@ -22,7 +22,7 @@ window.onload = () => {
     form.onsubmit = (e) => e.preventDefault();
 
     const walls = document.getElementById('walls');
-    form.querySelectorAll('input').forEach((input) => {
+    form.querySelectorAll('input, select[name=gap]').forEach(/** @param {HTMLInputElement|HTMLSelectElement} input */(input) => {
       if (input.type === 'color') {
         const setColor = () => walls.style.setProperty('--gap-color', input.value);
         input.onchange = setColor;
@@ -36,6 +36,9 @@ window.onload = () => {
       } else {
         input.onchange = () => {
           setSize(form);
+          if (input.name === 'o') {
+            syncDeltas(form.closest('.wall'), input.valueAsNumber);
+          }
           draw();
         };
       }

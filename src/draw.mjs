@@ -13,20 +13,20 @@ export const updateLabel = (tile) => {
   );
   const height = (tileSize.height + parseInt(vars.marginTop));
 
-  const sizes = [width, height].map((n) => `${Number((Math.round(n) / 10).toFixed(1))}"`);
+  const sizes = [width, height].map((n) => `${Number((Math.round(n / 5) * 5 / 10).toFixed(1))}"`);
 
   tile.title = sizes.join('x');
   tile.textContent = height < tileSize.height ? sizes.join('x') : sizes[0];
 };
 
 export const draw = () => {
-  document.querySelectorAll('div.wall').forEach((wall) => {
-    wall.textContent = '';
+  document.querySelectorAll('div.wall').forEach(/** @param {HTMLElement} wall */(wall) => {
+    wall.replaceChildren();
 
     const vars = window.getComputedStyle(wall);
     const gap = parseInt(vars.getPropertyValue('--gap'));
     const rowShift = parseInt(vars.getPropertyValue('--rowShift')) || 3;
-    const rowDelta = parseInt(vars.getPropertyValue('--rowDelta')) || 0;
+    const deltas = wall.dataset['deltas'].split(',').map(Number).map((d) => (d * 10));
 
     const { clientWidth: wallW, clientHeight: wallH } = wall;
 
@@ -34,13 +34,13 @@ export const draw = () => {
       return;
     }
 
-    const partialStart = rowDelta + (wallW - Math.floor(wallW / tileSize.width) * tileSize.height) / 2;
-
     const rows = Math.ceil(wallH / tileSize.height);
 
     // row
     for (let rowIdx = 0, rowH = tileSize.height; rowIdx < rows; rowIdx++, rowH += tileSize.height) {
       const tileRow = appendChild(wall, { className: 'row' });
+
+      const partialStart = (deltas[rowIdx % rowShift] || 0) + (wallW - Math.floor(wallW / tileSize.width) * tileSize.height) / 2;
 
       // tiles
       const partial = (partialStart + tileSize.width * (rowIdx % rowShift) / rowShift) % tileSize.width;

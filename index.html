@@ -4,10 +4,10 @@
 <head>
   <meta charset='utf-8'>
   <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-  <title>Page Title</title>
+  <link rel="icon" type="image/x-icon" href="data:.">
+  <title>Tile Layout Visualizer</title>
   <meta name='viewport' content='width=device-width, initial-scale=1'>
-  <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-  <script src='main.js'></script>
+  <link rel='stylesheet' type='text/css' media='screen' href='src/main.css'>
 </head>
 
 <body>
@@ -44,7 +44,7 @@
         </label>
         <label data-unit='"'>
           <span>Δ:</span>
-          <input name="d" type="number" value="0" />
+          <input name="d" type="number" value="0" step="0.5" />
         </label>
         <label>
           <span>X:</span>
@@ -54,6 +54,8 @@
       <div class="wall"></div>
     </section>
   </template>
+
+  <script src='src/main.mjs' type="module"></script>
 
 </body>
 

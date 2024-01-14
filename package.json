@@ -1,15 +1,57 @@
 {
-  "name": "test",
+  "name": "tile-layout-visualizer",
   "version": "1.0.0",
-  "description": "",
+  "description": "Visualize tile layout on the wall",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "http-server -a 127.0.0.1 -d false  -c-1 -H 'x-content-type-options:nosniff'"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "Jerry Hu",
+  "license": "MIT",
+  "eslintConfig": {
+    "root": true,
+    "plugins": [
+      "@stylistic"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@stylistic/recommended-extends"
+    ],
+    "rules": {
+      "@stylistic/eol-last": [
+        "error",
+        "always"
+      ],
+      "@stylistic/arrow-parens": [
+        "error",
+        "always"
+      ],
+      "@stylistic/object-property-newline": [
+        "error",
+        {
+          "allowAllPropertiesOnSameLine": true
+        }
+      ],
+      "@stylistic/brace-style": [
+        "error",
+        "1tbs"
+      ],
+      "@stylistic/semi": [
+        "error",
+        "always"
+      ]
+    },
+    "parserOptions": {
+      "sourceType": "module",
+      "ecmaVersion": "latest"
+    },
+    "env": {
+      "browser": true
+    }
+  },
   "devDependencies": {
     "@stylistic/eslint-plugin": "^1.5.3",
-    "eslint": "^8.56.0"
+    "eslint": "^8.56.0",
+    "http-server": "^14.1.1"
   }
 }

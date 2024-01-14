@@ -4,6 +4,8 @@
  * @property {number} height
  */
 
+import { updateLabel } from './draw.mjs';
+
 /**
  * @typedef {Size & {offset: number, delta: number}} WallDef
  */
@@ -18,10 +20,11 @@ export const tileSize = {
 
 /**
  * @param {Element} parent
- * @param {string} tagName
- * @param {string=} className
+ * @param {Object} def
+ * @param {string=} def.tagName
+ * @param {string} def.className
  */
-export const appendChild = (parent, tagName, className) =>
+export const appendChild = (parent, { tagName = 'div', className }) =>
   parent.appendChild(Object.assign(document.createElement(tagName), { className }));
 
 /**
@@ -32,7 +35,6 @@ export const appendChild = (parent, tagName, className) =>
 export const findInput = (node, name) =>
   // @ts-ignore
   node.querySelector(`input[name=${name}]`);
-
 
 /**
  * @param {HTMLFormElement} form
@@ -113,4 +115,39 @@ export const saveWalls = () => {
   } catch (error) {
     console.error('localstorage');
   }
+};
+
+/**
+ * @param {Object} props
+ * @param {HTMLElement} props.target
+ * @param {number=} props.offsetX
+ * @param {string=} props.className
+ */
+export const startDragging = ({ target, offsetX = 0, className = 'dragging' }) => {
+  const row = target.parentElement;
+  const firstChild = row.firstElementChild;
+  const vars = window.getComputedStyle(firstChild);
+  offsetX -= parseInt(vars.getPropertyValue('--shift'));
+
+  let lastUpdate = 0;
+
+  /** @param {MouseEvent} e */
+  function mouseMoveHandler(e) {
+    if (Date.now() - lastUpdate > 50) {
+      lastUpdate = Date.now();
+
+      firstChild.style.setProperty('--shift', (e.pageX - offsetX) + 'px');
+      row.childNodes.forEach((/** @type {HTMLElement} */ tile) => updateLabel(tile));
+    }
+  }
+
+  function reset() {
+    window.removeEventListener('mousemove', mouseMoveHandler);
+    window.removeEventListener('mouseup', reset);
+    row.classList.remove(className);
+  }
+
+  window.addEventListener('mousemove', mouseMoveHandler);
+  window.addEventListener('mouseup', reset);
+  row.classList.add(className);
 };

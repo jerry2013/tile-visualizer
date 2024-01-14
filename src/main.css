@@ -5,6 +5,7 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   --gap: 0px;
+  --gap-color: white;
 }
 
 fieldset {
@@ -22,12 +23,12 @@ form {
 label {
   position: relative;
   padding-right: 0.5em;
+}
 
-  &::after {
-    content: attr(data-unit);
-    position: absolute;
-    right: 0;
-  }
+label::after {
+  content: attr(data-unit);
+  position: absolute;
+  right: 0;
 }
 
 input {
@@ -63,32 +64,56 @@ div.wall {
 
 div.row {
   flex-direction: row;
+  position: relative;
+  cursor: grab;
+  -webkit-user-select: none;
+  user-select: none;
   --partialX: 0px;
   --partialY: 0px;
+  --shift: 0px;
+}
+
+div.row.dragging {
+  cursor: grabbing;
 }
 
 .tile {
   flex: 0 0 auto;
   position: relative;
-  width: calc(var(--tileW) - var(--gap) + var(--partialX));
-  height: calc(var(--tileH) - var(--gap) + var(--partialY));
+  width: calc(var(--tileW) - var(--gap));
+  height: calc(var(--tileH) - var(--gap));
+  margin-left: calc(var(--partialX) + var(--shift));
+  margin-top: calc(var(--partialY));
   outline: solid 1px #ccc;
-  color: #666;
+  color:darkgray;
   background-color: #eee;
-  box-shadow: 0 0 2px gray;
+  box-shadow: 0 0 0 var(--gap) var(--gap-color);
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: end;
   /* corner counter */
   overflow: hidden;
   counter-increment: num-tiles;
 }
 
+div.row.dragging .tile,
+.tile:hover {
+  color: #666;
+}
+
+.tile:first-child {
+  justify-content: right;
+}
+
+.tile:last-child {
+  justify-content: left;
+}
+
 .tile::before,
 .tile::after {
   position: absolute;
-  top: 0;
-  left: 0;
+  top: calc(0px - var(--partialY));
+  left: calc(0px - var(--partialX) - var(--shift));
   display: block;
   font-size: 0.75em;
   opacity: 0;
@@ -103,6 +128,7 @@ div.row {
   content: '';
   width: 3em;
   height: 3em;
+  border-radius: 100%;
   background-color: #0079C611;
   transform-origin: 50% 50%;
   transform: rotate(45deg) translate(-2em);
@@ -113,5 +139,4 @@ div.row {
   width: 1.25em;
   height: 1.25em;
   text-align: center;
-  opacity: 0;
 }
